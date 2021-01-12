@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Root usage="ExtensionDescriptor" chip="KALL" chiptype="03" bustype ="I2C"
+	libname ="Cobra.KALL" AppVersion="2.00.03" OCEVersion="1.00.03.00"
+	AMTEnable="false" ProjectCode="OCEKAL3X">
+  <Part Name="DBConfig">
+    <ChipName>OZ7703</ChipName>
+    <ChipVersion>A0</ChipVersion>
+    <UserType>X</UserType>
+    <Date>20210111</Date>
+    <HasCom>true</HasCom>
+    <HasAMT>true</HasAMT>
+  </Part>
+  <Part Name = "MainBtnList">
+    <Button Label = "Expert"  Name = "Exper"  PanelName ="Cobra.ExperPanel"/>
+    <Button Label = "Register Config" NoMapping="True"   Name ="DeviceConfig"   PanelName ="Cobra.DeviceConfigurationPanel">
+      <Layout Name ="layout" bOrder ="true">
+        <Button Name ="EraseBtn" IsEnable ="False" Visibility="Collapsed"/>
+      </Layout>
+    </Button>
+    <Button Label = "EFUSE Config"   Name ="DeviceConfig"   PanelName ="Cobra.DeviceConfigurationPanel">
+      <Layout Name ="layout" bOrder ="true">
+        <Button Name ="EraseBtn" IsEnable ="False" Visibility="Collapsed"/>
+      </Layout>
+      <SubTask>
+        <SaveHex>17</SaveHex>
+      </SubTask>
+    </Button>
+    <Button Label = "Mass Production" DBModuleName="Production"  Name = "Production" ShowConfig="True" PanelName ="Cobra.ProductionPanel">
+      <Process>
+        <Item SubTaskID="9">Chip Frozen Check</Item>
+        <Item SubTaskID="10">Chip Dirty Check</Item>
+        <Item SubTaskID="11" RadioOption="0">Download With Power Control</Item>
+        <Item SubTaskID="12" RadioOption="1">Download</Item>
+        <Item SubTaskID="13">Read Back Check</Item>
+      </Process>
+      <BinFileCheck SubTaskID="21"></BinFileCheck>
+    </Button>
+  </Part>
+</Root>
