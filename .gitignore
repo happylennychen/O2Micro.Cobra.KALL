@@ -1,0 +1,68 @@
+# ignore files in all directories
+*.7z
+**/obj/
+**/bin/
+**/Debug/
+**/Release/
+*.bak
+*.lnk
+*.suo
+*.config
+*.pack
+.vs
+!app.config
+.vs/
+
+# ignore files in the System directory
+System/*.suo
+System/Common/Be.Windows.Forms.HexBox/Be.Windows.Forms.HexBox.xml
+
+# ignore files in the output directory
+output/COBRA.lnk
+
+# ignore files in the output/Cobra directory
+output/COBRA/Be.Windows.Forms.HexBox.xml
+output/COBRA/COBRA Documents/
+output/COBRA/ExtensionRuntime/
+output/COBRA/ExtensionMonitor/
+output/COBRA/Extensions/
+output/COBRA/Settings/Setting.xml
+output/COBRA/DEM/
+output/COBRA/Logs/
+output/COBRA/Libs/
+output/COBRA/ru-ru/
+output/COBRA/SFL/
+output/COBRA/CobraCenter/
+output/COBRA/*.csv
+output/COBRA/*.dll
+!Microsoft.Windows.Shell.dll
+!RibbonControlsLibrary.dll
+!System.Data.SQLite.dll
+!System.Data.SQLite.EF6.dll
+!System.Data.SQLite.Linq.dll
+!ICSharpCode.SharpZipLib.dll
+!Newtonsoft.Json.dll
+output/COBRA/*.pdb
+!Microsoft.Windows.Shell.pdb
+!RibbonControlsLibrary.pdb
+output/COBRA/*.exe
+!output/COBRA/Settings/Setting.xml
+
+
+# ignore files in the output/Upgrade directory
+output/Upgrade/Logs/
+output/Upgrade/Cobra.Common.dll
+output/Upgrade/Cobra.Common.pdb
+output/Upgrade/Cobra.ControlLibrary.dll
+output/Upgrade/Cobra.ControlLibrary.pdb
+output/Upgrade/Cobra.Center.dll
+output/Upgrade/Cobra.Center.pdb
+output/Upgrade/Cobra.Resource.dll
+output/Upgrade/Cobra.Resource.pdb
+output/Upgrade/Cobra.Update.exe
+output/Upgrade/Cobra.Update.pdb
+output/Upgrade/System.Data.SQLite.dll
+output/Upgrade/System.Data.SQLite.pdb
+
+
+
