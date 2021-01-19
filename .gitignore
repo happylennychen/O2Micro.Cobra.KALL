@@ -12,6 +12,8 @@
 .vs
 !app.config
 .vs/
+*.dll
+*.oce
 
 # ignore files in the System directory
 System/*.suo

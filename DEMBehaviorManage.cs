@@ -30,7 +30,7 @@ namespace Cobra.KALL
             set { m_parent = value; }
         }
 
-        UInt16[] EFUSEUSRbuf = new UInt16[ElementDefine.EF_USR_TOP - ElementDefine.EF_USR_OFFSET + 1];      //Used for read back check
+        UInt16[] EFUSEUSRbuf = new UInt16[ElementDefine.EF_USR_TOP - ElementDefine.EF_USR_OFFSET + 1 - 1];      //Used for read back check, 不包含cell number
 
         private object m_lock = new object();
         private CCommunicateManager m_Interface = new CCommunicateManager();
@@ -1030,7 +1030,7 @@ namespace Cobra.KALL
         public uint CheckBinData(List<byte> blist)
         {
             UInt32 ret = LibErrorCode.IDS_ERR_SUCCESSFUL;
-            int length = (ElementDefine.EF_USR_TOP - ElementDefine.EF_USR_OFFSET + 1);
+            int length = (ElementDefine.EF_USR_TOP - ElementDefine.EF_USR_OFFSET);
             length *= 2;    //一个字节地址，两个字节数值
             if (blist.Count != length)
             {
@@ -1040,6 +1040,11 @@ namespace Cobra.KALL
             {
                 for (int i = ElementDefine.EF_USR_OFFSET, j = 0; i <= ElementDefine.EF_USR_TOP; i++, j++)
                 {
+                    if (i == (byte)ElementDefine.CELL_NUM_OFFSET)      //略过cell number. Issue 978
+                    {
+                        j--;
+                        continue;
+                    }
                     if (blist[j * 2] != i)
                     {
                         ret = LibErrorCode.IDS_ERR_DEM_BIN_ADDRESS_ERROR;
@@ -1054,6 +1059,8 @@ namespace Cobra.KALL
         {
             for (ushort i = ElementDefine.EF_USR_OFFSET; i <= ElementDefine.EF_USR_TOP; i++)
             {
+                if (i == (byte)ElementDefine.CELL_NUM_OFFSET)      //略过cell number. Issue 
+                    continue;
                 parent.m_EFRegImg[i].err = 0;
                 parent.m_EFRegImg[i].val = 0;
             }
@@ -1064,6 +1071,8 @@ namespace Cobra.KALL
             string tmp = "";
             for (ushort i = ElementDefine.EF_USR_OFFSET; i <= ElementDefine.EF_USR_TOP; i++)
             {
+                if (i == (byte)ElementDefine.CELL_NUM_OFFSET)      //略过cell number. Issue 
+                    continue;
                 if (parent.m_EFRegImg[i].err != LibErrorCode.IDS_ERR_SUCCESSFUL)
                     return parent.m_EFRegImg[i].err;
                 tmp += "0x" + i.ToString("X2") + ", " + "0x" + parent.m_EFRegImg[i].val.ToString("X2") + "\r\n";
@@ -1077,6 +1086,8 @@ namespace Cobra.KALL
             List<byte> tmp = new List<byte>();
             for (ushort i = ElementDefine.EF_USR_OFFSET; i <= ElementDefine.EF_USR_TOP; i++)
             {
+                if (i == (byte)ElementDefine.CELL_NUM_OFFSET)      //略过cell number. Issue 
+                    continue;
                 if (parent.m_EFRegImg[i].err != LibErrorCode.IDS_ERR_SUCCESSFUL)
                     return parent.m_EFRegImg[i].err;
                 tmp.Add((byte)i);
@@ -1156,11 +1167,16 @@ namespace Cobra.KALL
             }
 
             LoadEFRegImgFromEFUSEBin(msg.sm.efusebindata);
-
             for (byte badd = (byte)ElementDefine.EF_USR_OFFSET; badd <= (byte)ElementDefine.EF_USR_TOP; badd++)
             {
-                if (badd != ElementDefine.CELL_NUM_OFFSET)                      //略过cell number，已经写了，就不要再写了
+                if (badd == ElementDefine.CELL_NUM_OFFSET)                      //略过cell number，已经写了，就不要再写了
+                {
+                    continue;
+                }
+                else if (badd < ElementDefine.CELL_NUM_OFFSET)
                     ret = OnWriteByte(badd, (byte)EFUSEUSRbuf[badd - ElementDefine.EF_USR_OFFSET]);
+                else
+                    ret = OnWriteByte(badd, (byte)EFUSEUSRbuf[badd - ElementDefine.EF_USR_OFFSET - 1]);
                 if (ret != LibErrorCode.IDS_ERR_SUCCESSFUL)
                 {
                     return ret;
@@ -1193,7 +1209,6 @@ namespace Cobra.KALL
             EFUSEUSRbuf[4] = efusebindata[9];
             EFUSEUSRbuf[5] = efusebindata[11];
             EFUSEUSRbuf[6] = efusebindata[13];
-            EFUSEUSRbuf[7] = efusebindata[15];
         }
 
         private UInt32 ReadBackCheck()
@@ -1205,10 +1220,22 @@ namespace Cobra.KALL
             byte pval = 0;
             for (byte badd = (byte)ElementDefine.EF_USR_OFFSET; badd <= (byte)ElementDefine.EF_USR_TOP; badd++)
             {
+                if (badd == (byte)ElementDefine.CELL_NUM_OFFSET)      //略过cell number. Issue 
+                    continue;
                 ret = OnReadByte(badd, ref pval);
-                if (pval != (byte)EFUSEUSRbuf[badd - ElementDefine.EF_USR_OFFSET])
+                if (badd < (byte)ElementDefine.CELL_NUM_OFFSET)
                 {
-                    return LibErrorCode.IDS_ERR_DEM_BUF_CHECK_FAIL;
+                    if (pval != (byte)EFUSEUSRbuf[badd - ElementDefine.EF_USR_OFFSET])
+                    {
+                        return LibErrorCode.IDS_ERR_DEM_BUF_CHECK_FAIL;
+                    }
+                }
+                if (badd > (byte)ElementDefine.CELL_NUM_OFFSET)
+                {
+                    if (pval != (byte)EFUSEUSRbuf[badd - ElementDefine.EF_USR_OFFSET - 1])
+                    {
+                        return LibErrorCode.IDS_ERR_DEM_BUF_CHECK_FAIL;
+                    }
                 }
             }
             return ret;
@@ -1261,7 +1288,6 @@ namespace Cobra.KALL
                 if (ret == LibErrorCode.IDS_ERR_SUCCESSFUL) break;
             }
             deviceinfor.status = 0;     //N变成Y
-
             return ret;
 #endif
         }

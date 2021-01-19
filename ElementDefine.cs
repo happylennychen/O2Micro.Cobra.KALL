@@ -26,7 +26,7 @@ namespace Cobra.KALL
         internal const UInt16 USR_CRC_OFFSET = 0x1e;
 
         internal const UInt16 ATE_CRC_BUF_LEN = 6;     // 00~05
-        internal const UInt16 USR_CRC_BUF_LEN = 6;     // 08~0d
+        internal const UInt16 USR_CRC_BUF_LEN = 5;     // 08~0c
 
         internal const UInt16 CELL_NUM_OFFSET = 0x1d;
 
